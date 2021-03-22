@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Coding Challenge - Commas</title>
+  </head>
+  <body>
+    <form onsubmit="return false">
+      <input id="userNum" type="text" />
+      <input type="submit" value="place commas!" onclick="submitforCommas()" />
+    </form>
+
+    <div id="status"></div>
+    <p id="commaNum"></p>
+
+    <script>
+      function checkInput(longNumber) {
+        /* Handle a few exceptions */
+        let inputIsValid = true;
+
+        //check if you got a number: reference https://www.w3schools.com/jsref/jsref_isNaN.asp
+        if (isNaN(longNumber)) {
+          document.getElementById("status").innerHTML =
+            "You did not enter a number homie!";
+          throw new TypeError("You did not enter a number homie!");
+          inputIsValid = false;
+        }
+
+        //we need commas only for numbers above 1000
+        if (longNumber < 1000) {
+          document.getElementById("status").innerHTML =
+            "Hi, that one is never gonna need a comma.";
+          throw new TypeError("Hi, that one is never gonna need a comma.");
+          inputIsValid = false;
+        }
+
+        return inputIsValid;
+      }
+
+      function placeSoluton(solution) {
+        document.getElementById("commaNum").innerHTML = solution;
+      }
+
+      function submitforCommas() {
+        let currentInput = document.forms[0].elements[0].value;
+        // if(checkInput(currentInput)) {
+        placeSoluton(commas(currentInput));
+        //  }
+      }
+
+      function commas(longNumber) {
+        let isNegative = false;
+        if (longNumber < 0) {
+          isNegative = true;
+          //remove - and save the rest of the number as it may need commas
+          //for test cases like -5 or -5000000
+          longNumber = longNumber.toString().split("-")[1];
+        }
+
+        let decimalPlaces = -1;
+        if (longNumber != Math.floor(longNumber)) {
+          let decStr = Number(longNumber).toFixed(3).toString().split(".")[1];
+
+          //remove any trailing zeros
+          decimalPlaces = decStr.toString().replace(/[0\s]+$/g, "");
+
+          //deal only with the left of the decimal places.
+          longNumber = longNumber.toString().split(".")[0];
+        }
+
+        // return number itself if it needs no commas.
+        // return rounded upto 3 decimal places if it has decimals
+        if (longNumber < 1000) {
+          if (longNumber == Math.floor(longNumber)) {
+            if (decimalPlaces > -1) {
+              return isNegative
+                ? "-" + longNumber.toString() + "." + decimalPlaces
+                : longNumber.toString() + "." + decimalPlaces;
+            } else {
+              return isNegative
+                ? "-" + longNumber.toString()
+                : longNumber.toString();
+            }
+          } else {
+            let checkLowVal = longNumber;
+
+            if (decimalPlaces > -1) {
+              return isNegative
+                ? "-" + Number(checkLowVal) + "." + decimalPlaces
+                : Number(checkLowVal) + "." + decimalPlaces;
+            } else {
+              return isNegative
+                ? "-" + Number(checkLowVal).toFixed(3).toString()
+                : Number(checkLowVal).toFixed(3).toString();
+            }
+          }
+        }
+
+        //FINALLY to comma placement!
+        //get the length of the number to determine the number of commas it needs.
+        //to get length, will need to convert it to string.
+        //check if decimals needed. Save decimal places for later, deal only with left of decimal characters.
+
+        let numOfcommas,
+          longNumberString = longNumber.toString();
+
+        console.log(longNumber + " what we dealing with");
+
+        //how many commas for this number ? We divide length by 3, because commas couple 3 digits.
+        if (Number.isInteger(longNumberString.length / 3)) {
+          numOfcommas = longNumberString.length / 3 - 1;
+          // 1000000 has length 6 , 6/3 = 2 , 2 - 1 : one comma > 1000,000
+        } else {
+          numOfcommas = Math.floor(longNumberString.length / 3);
+          // 10000000000 has length 10, 10/3 = 3.3333, Math.floor will return 3 > 3 commas > 10,000,000,000
+        }
+
+        // add numOfcommas from the end of the number string.
+        let every3 = 0; //place comma every 3 characters from behind the string.
+        let commaString = ""; //save final string here
+        // console.log(longNumberString);
+
+        for (let i = longNumberString.length; i > 0; i--) {
+          //to check you can print your number backwards.
+          console.log(longNumberString.charAt(i));
+
+          every3 = every3 + 1; //keep track of passing every 3rd character.
+
+          if (every3 % 3 === 0) {
+            // you have passed three characters, time to put a comma.
+            every3 = 0; //reset counter
+
+            //this is where the comma should go.
+
+            let tmpStr = longNumberString.slice(0, longNumberString.length - 3); // grab the remaining string before comma.
+
+            if (tmpStr !== "") {
+              //you are not at the end of the original number.
+              longNumberString = tmpStr + "," + longNumberString.slice(-3); //place the digits before comma then , then rest of the number.
+              commaString = "," + longNumberString.slice(-3) + commaString;
+              longNumberString = longNumberString.split(",")[0]; //only deal with the part that doesn't have commas yet.
+              console.log("without comma" + longNumberString); // new string you will deal with.
+            }
+          }
+        }
+
+        //before answer deal with any decimal places you saved before.
+        if (decimalPlaces > -1) {
+          console.log(
+            "with comma decimals" +
+              longNumberString +
+              commaString +
+              "." +
+              decimalPlaces
+          );
+          return isNegative
+            ? "-" + longNumberString + commaString + "." + decimalPlaces
+            : longNumberString + commaString + "." + decimalPlaces;
+        } else {
+          console.log("with comma  " + longNumberString + commaString);
+          return isNegative
+            ? "-" + longNumberString + commaString
+            : longNumberString + commaString;
+        }
+      }
+    </script>
+  </body>
+</html>
