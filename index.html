@@ -22,18 +22,14 @@
 
         //check if you got a number: reference https://www.w3schools.com/jsref/jsref_isNaN.asp
         if (isNaN(longNumber)) {
+          inputIsValid = false;
           document.getElementById("status").innerHTML =
             "You did not enter a number homie!";
+          placeSolution("");
           throw new TypeError("You did not enter a number homie!");
-          inputIsValid = false;
-        }
-
-        //we need commas only for numbers above 1000
-        if (longNumber < 1000) {
-          document.getElementById("status").innerHTML =
-            "Hi, that one is never gonna need a comma.";
-          throw new TypeError("Hi, that one is never gonna need a comma.");
-          inputIsValid = false;
+        } else {
+          inputIsValue = true;
+          document.getElementById("status").innerHTML = "Clean input ! woo hoo";
         }
 
         return inputIsValid;
@@ -45,9 +41,11 @@
 
       function submitforCommas() {
         let currentInput = document.forms[0].elements[0].value;
-        // if(checkInput(currentInput)) {
-        placeSoluton(commas(currentInput));
-        //  }
+        if (checkInput(currentInput)) {
+          placeSoluton(commas(currentInput));
+        } else {
+          placeSolution("um check your inputs");
+        }
       }
 
       function commas(longNumber) {
